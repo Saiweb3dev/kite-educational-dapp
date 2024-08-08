@@ -1,38 +1,64 @@
-import React from 'react';
-import Link from 'next/link';
+import Link from "next/link";
+import React from "react";
+interface NavbarProps {}
 
-const Navbar = () => {
+const Navbar: React.FC<NavbarProps> = () => {
   return (
-    <nav className="flex items-center justify-between flex-wrap bg-teal-500 p-6">
-      <div className="flex items-center flex-shrink-0 text-white mr-6">
-        <span className="font-semibold text-xl tracking-tight">E-Learn Logo</span>
-      </div>
-      <div className="block lg:flex lg:items-center lg:w-auto">
-        <div className="text-sm lg:flex-grow">
-          <Link href="/courses">
-            <a className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-              Courses
-            </a>
-          </Link>
-          <Link href="/dashboard">
-            <a className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-              Dashboard
-            </a>
-          </Link>
-          {/* Placeholder for admin-only Create Course link */}
-          <Link href="/create-course">
-            <a className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-              Create Course
-            </a>
-          </Link>
+    <div className="navbar bg-blue-700">
+      <div className="navbar-start">
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h8m-8 6h16"
+              />
+            </svg>
+          </div>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm space-y-2 dropdown-content bg-white text-blue-700 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+          >
+            <Link href="/Course">
+              <span>Courses</span>
+            </Link>
+            <Link href="/Dashboard">
+              <span>Dashboard</span>
+            </Link>
+            <Link href="/Create_Course">
+              <span>Create Course</span>
+            </Link>
+          </ul>
         </div>
+        <span className="btn btn-ghost text-xl">KITE_EDU</span>
       </div>
-      <div className="block lg:flex lg:items-center lg:w-auto">
-        <button className="inline-block px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0">
-          Connect Wallet
-        </button>
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal  space-x-6 px-1">
+          <Link href="/Course">
+            <span>Courses</span>
+          </Link>
+          <Link href="/Dashboard">
+            <span>Dashboard</span>
+          </Link>
+          <Link href="/Create_Course">
+            <span>Create Course</span>
+          </Link>
+        </ul>
       </div>
-    </nav>
+      <div className="navbar-end">
+        <span className="btn border-2 text-black bg-white hover:bg-blue-700 hover:border-white hover:text-white">
+          Connect
+        </span>
+      </div>
+    </div>
   );
 };
 
