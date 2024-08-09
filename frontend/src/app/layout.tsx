@@ -36,11 +36,12 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             {/* Render the Navbar component at the top of the layout */}
             <Navbar/>
-          </QueryClientProvider>
-        </WagmiProvider>
+
         
         {/* Render children components passed to RootLayout */}
         {children}
+        </QueryClientProvider>
+        </WagmiProvider>
       </body>
     </html>
   );
