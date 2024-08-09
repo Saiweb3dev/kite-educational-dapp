@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import ConnectWallet from "./Wallet/ConnectButton";
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = () => {
@@ -54,9 +55,7 @@ const Navbar: React.FC<NavbarProps> = () => {
         </ul>
       </div>
       <div className="navbar-end">
-        <span className="btn border-2 text-black bg-white hover:bg-blue-700 hover:border-white hover:text-white">
-          Connect
-        </span>
+       <ConnectWallet/>
       </div>
     </div>
   );
