@@ -20,7 +20,8 @@ app.post('/admin/create-course',
     /* authMiddleware */
       courseController.createCourse);
 
-app.get('/api/courses',courseController.getCourseDetails)
+app.get('/api/courses',courseController.getCourses)
+app.get('/api/course/:courseName', courseController.getCourseDetails);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

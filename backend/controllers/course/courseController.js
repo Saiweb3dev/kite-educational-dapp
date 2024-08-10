@@ -1,5 +1,6 @@
 const CourseModel = require('../../models/course/CourseModel');
 const path = require('path');
+const fs = require('fs').promises;
 const {fileAccessFunc} = require("../../utils/fileAccessFunc")
 exports.createCourse = async (req, res) => {
   try {
@@ -20,9 +21,9 @@ exports.createCourse = async (req, res) => {
   }
 };
 
-exports.getCourseDetails = async (req, res) => {
+exports.getCourses = async (req, res) => {
   try {
-      console.log("Calling getCourseDetails from course controller");
+      console.log("Calling getCourses from course controller");
       const directoryPath = path.join(__dirname, '..', '..', 'data', 'courseData');
       console.log("directoryPath --> ", directoryPath);
       
@@ -36,6 +37,38 @@ exports.getCourseDetails = async (req, res) => {
       res.status(500).send({ message: 'An error occurred' });
   }
 };
+
+exports.getCourseDetails = async (req, res) => {
+  try {
+    console.log("Calling getCourseDetails from course controller");
+    const { courseName } = req.params; // Get the course name from the URL parameter
+    const directoryPath = path.join(__dirname, '..', '..', 'data', 'courseData');
+    const filePath = path.join(directoryPath, `${courseName}.json`);
+
+    console.log("Course name --> ", courseName);
+    console.log("filePath --> ", filePath);
+
+
+    // Check if the file exists
+    try {
+      await fs.access(filePath);
+    } catch (error) {
+      console.log("File not found");
+      return res.status(404).send({ message: 'Course not found' });
+    }
+
+    // Read and parse the JSON file
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const courseData = JSON.parse(fileContent);
+
+    console.log("Response sent ---> ", courseData);
+    res.send(courseData);
+  } catch (error) {
+    console.log("Error ------------------------------")
+    console.error(error);
+    res.status(500).send({ message: 'An error occurred' });
+  }
+}
 
 
 
