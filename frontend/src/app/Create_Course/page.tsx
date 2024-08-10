@@ -26,6 +26,9 @@ const CreateCoursePage: React.FC = () => {
     }, [address]);
 
     const handleSubmit = async (courseData: CourseData) => {
+
+    console.log("Calling handle sumbit ....")
+    console.log("Sending Data --> ",courseData)
         if (!isAdmin) {
             alert('Only admins can create courses.');
             return;

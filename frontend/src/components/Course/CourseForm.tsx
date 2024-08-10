@@ -1,66 +1,31 @@
 "use client"
 import React, { useState } from 'react';
-
-// Define the shape of a quiz option
-interface QuizOption {
-    text: string;
-    correct: boolean;
-}
-
-// Define the shape of the form data
-// In CourseForm.tsx
-
-// Adjust the FormData interface to include the properties expected by handleSubmit
-interface FormData {
-  title: string;
-  description: string;
-  courseName: string;
-  imageUrl: string;
-  link: string;
-  quizzes: Array<{
-      question: string;
-      options: Array<QuizOption>;
-  }>;
-}
-
-
-
-// Define the props for the form component
-interface CourseFormProps {
-  onSubmit: (formData: FormData) => void; // Ensure this matches what you're passing
-}
+import { QuizOption, FormData, CourseFormProps } from '../../../types/Course';
 
 // CourseForm component
 const Form: React.FC<CourseFormProps> = ({ onSubmit }) => {
-    // State for course name, image URL, link, and quizzes
+    // State hooks for form fields
+    const [title, setTitle] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
     const [courseName, setCourseName] = useState<string>('');
     const [imageUrl, setImageUrl] = useState<string>('');
     const [link, setLink] = useState<string>('');
-    const [quizzes, setQuizzes] = useState<Array<{ question: string; options: Array<QuizOption> }>>([
-        { question: '', options: [] },
+    const [quizzes, setQuizzes] = useState<Array<{ id: number; question: string; options: Array<QuizOption>; answer?: string }>>([
+        { id: 0, question: '', options: [], answer: '' },
     ]);
+    const [lastUsedId, setLastUsedId] = useState<number>(0);
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-  
-      // Initialize title and description with empty strings or default values
-      const formData: FormData = {
-          title: '',
-          description: '',
-          courseName,
-          imageUrl,
-          link,
-          quizzes,
-      };
-  
-      onSubmit(formData);
-  };
-  
+        e.preventDefault();
+        const formData: FormData = { title, description, courseName, imageUrl, link, quizzes };
+        onSubmit(formData);
+    };
 
     // Add a new quiz
     const addQuiz = () => {
-        setQuizzes([...quizzes, { question: '', options: [] }]);
+        setLastUsedId(prevId => prevId + 1);
+        setQuizzes([...quizzes, { id: lastUsedId + 1, question: '', options: [] }]);
     };
 
     // Remove a quiz by index
@@ -70,19 +35,57 @@ const Form: React.FC<CourseFormProps> = ({ onSubmit }) => {
 
     // Add an option to a quiz
     const addQuizOption = (quizIndex: number) => {
+        if (quizzes[quizIndex].options.length >= 4) {
+            alert("Each quiz can have up to 4 options.");
+            return;
+        }
         setQuizzes(quizzes.map((quiz, index) => 
             index === quizIndex ? { ...quiz, options: [...quiz.options, { text: '', correct: false }] } : quiz
         ));
     };
 
+    // Update quiz question
+    const updateQuizQuestion = (index: number, value: string) => {
+        setQuizzes(quizzes.map((q, i) => i === index ? { ...q, question: value } : q));
+    };
+
+    // Update quiz option
+    const updateQuizOption = (quizIndex: number, optIndex: number, value: string) => {
+        setQuizzes(quizzes.map((q, i) => i === quizIndex ? 
+            { ...q, options: q.options.map((o, idx) => idx === optIndex ? { ...o, text: value } : o) } : q
+        ));
+    };
+
+    // Update quiz answer
+    const updateQuizAnswer = (quizId: number, value: string) => {
+        setQuizzes(quizzes.map(q => q.id === quizId ? { ...q, answer: value } : q));
+    };
+
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 bg-blue-700 p-4">
+            {/* Basic course information inputs */}
+            <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
+                required
+                className="block w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mb-2"
+            />
+            <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description"
+                required
+                className="block w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mb-2"
+            ></textarea>
             <input
                 type="text"
                 value={courseName}
                 onChange={(e) => setCourseName(e.target.value)}
                 placeholder="Course Name"
                 required
+                className="block w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mb-2"
             />
             <input
                 type="text"
@@ -90,6 +93,7 @@ const Form: React.FC<CourseFormProps> = ({ onSubmit }) => {
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="Image URL"
                 required
+                className="block w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mb-2"
             />
             <input
                 type="text"
@@ -97,36 +101,57 @@ const Form: React.FC<CourseFormProps> = ({ onSubmit }) => {
                 onChange={(e) => setLink(e.target.value)}
                 placeholder="Link"
                 required
+                className="block w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mb-2"
             />
+
+            {/* Quiz section */}
             {quizzes.map((quiz, index) => (
-                <div key={index}>
+                <div key={index} className="space-y-2">
+                    {/* Quiz question input */}
                     <input
                         type="text"
                         value={quiz.question}
-                        onChange={(e) =>
-                            setQuizzes(quizzes.map((q, i) => i === index ? { ...q, question: e.target.value } : q))
-                        }
+                        onChange={(e) => updateQuizQuestion(index, e.target.value)}
                         placeholder="Quiz Question"
                         required
+                        className="w-full text-white bg-transparent border-b-2 border-white outline-none p-2"
                     />
+                    {/* Quiz options inputs */}
                     {quiz.options.map((option, optIndex) => (
                         <input
                             key={optIndex}
                             type="text"
                             value={option.text}
-                            onChange={(e) =>
-                                setQuizzes(quizzes.map((q, i) => i === index ? { ...q, options: q.options.map((o, idx) => idx === optIndex ? { ...o, text: e.target.value } : o) } : q))
-                            }
-                            placeholder={`Option ${String.fromCharCode(optIndex + 65)} `}
+                            onChange={(e) => updateQuizOption(index, optIndex, e.target.value)}
+                            placeholder={`Option ${String.fromCharCode(optIndex + 65)}`}
                             required
+                            className="w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mt-2"
                         />
                     ))}
-                    <button onClick={() => addQuizOption(index)}>Add Option</button>
-                    <button onClick={() => removeQuiz(index)}>Remove Quiz</button>
+                    {/* Quiz answer input (only shown when 4 options are present) */}
+                    {quiz.options.length === 4 && (
+                        <input
+                            type="text"
+                            value={quiz.answer || ''}
+                            onChange={(e) => updateQuizAnswer(quiz.id, e.target.value)}
+                            placeholder="Quiz Answer"
+                            required
+                            className="w-full text-white bg-transparent border-b-2 border-white outline-none p-2 mt-2"
+                        />
+                    )}
+                    {/* Quiz control buttons */}
+                    <div className="flex justify-between mt-2">
+                        <button onClick={() => addQuizOption(index)} className="bg-white text-blue-700 px-4 py-2 rounded">Add Option</button>
+                        <button onClick={() => removeQuiz(index)} className="bg-red-500 text-white px-4 py-2 rounded">Remove Quiz</button>
+                    </div>
                 </div>
             ))}
 
-            <button onClick={() => addQuiz()}>Add New Quiz</button>
+            {/* Add new quiz button */}
+            <button onClick={() => addQuiz()} className="bg-white text-blue-700 px-4 py-2 rounded mt-4">Add New Quiz</button>
+
+            {/* Form submit button */}
+            <button type="submit" className="w-full bg-white text-blue-700 px-4 py-2 rounded mt-4">Submit</button>
         </form>
     );
 };
