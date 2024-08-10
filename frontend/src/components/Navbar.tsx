@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             tabIndex={0}
             className="menu menu-sm space-y-2 dropdown-content bg-white text-blue-700 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
-            <Link href="/Course">
+            <Link href="/Courses">
               <span>Courses</span>
             </Link>
             <Link href="/Dashboard">
@@ -39,11 +39,13 @@ const Navbar: React.FC<NavbarProps> = () => {
             </Link>
           </ul>
         </div>
-        <span className="btn btn-ghost text-xl">KITE_EDU</span>
+        <Link href="/">
+          <span className="btn btn-ghost text-xl">KITE_EDU</span>
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal  space-x-6 px-1">
-          <Link href="/Course">
+          <Link href="/Courses">
             <span>Courses</span>
           </Link>
           <Link href="/Dashboard">
