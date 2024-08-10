@@ -1,36 +1,30 @@
 {
   "name": "Python",
-  "imageUrl": "python.jpg",
-  "link": "https:yt.com",
+  "imageUrl": "python.png",
+  "link": "http://yt.com",
   "quizzes": [
     {
-      "question": "what is python?",
+      "id": 0,
+      "question": "what is python",
       "options": [
         {
-          "text": "A) snake",
+          "text": "A) a snake",
           "correct": false
         },
         {
-          "text": "B) programming language",
+          "text": "B) a car",
           "correct": false
         },
         {
-          "text": "C) car",
+          "text": "C) a programming language",
           "correct": false
         },
         {
-          "text": "D) aeroplan",
-          "correct": false
-        },
-        {
-          "text": "E)Giraffe",
-          "correct": false
-        },
-        {
-          "text": "F) none of the above",
+          "text": "D) none of the above",
           "correct": false
         }
-      ]
+      ],
+      "answer": "C) a programming language"
     }
   ]
 }
