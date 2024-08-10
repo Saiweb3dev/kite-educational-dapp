@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import axios from 'axios';
-import Form from '@/components/Course/CourseForm';
-
+// import Form from '@/components/Course/CourseForm';
+import Form from "../../components/Course/Form"
 interface CourseData {
   title: string;
   description: string;
@@ -49,8 +49,8 @@ const CreateCoursePage: React.FC = () => {
     }
 
     return (
-        <div>
-            <h1>Create a New Course</h1>
+        <div className='container flex flex-col justify-center items-center space-y-6'>
+            <h1 className='text-6xl font-bold p-2'>Create a New Course</h1>
             <Form onSubmit={handleSubmit}/>
         </div>
     );
