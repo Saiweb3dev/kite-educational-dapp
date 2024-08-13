@@ -1,0 +1,41 @@
+
+----- LearningPlatform ------
+
+1. Contract Deployment:
+   - User 0xDeployer deploys the LearningPlatform contract
+   - 0xDeployer is automatically set as the admin
+
+2. Create a Course:
+   - 0xDeployer calls createCourse("QmCourseHash1", 1628097600)
+   - This creates Course ID 1
+
+3. Add an Admin:
+   - 0xDeployer calls addAdmin(0xAdmin1)
+   - 0xAdmin1 is now also an admin
+
+4. Students Complete the Course:
+   - 0xStudent1 calls completeCourse(1)
+   - 0xStudent2 calls completeCourse(1)
+
+5. Airdrop NFTs:
+   - After the deadline passes, 0xDeployer or 0xAdmin1 calls airdropNFTs(1)
+   - 0xStudent1 and 0xStudent2 receive NFTs for Course ID 1
+
+6. Create Another Course:
+   - 0xAdmin1 calls createCourse("QmCourseHash2", 1628184000)
+   - This creates Course ID 2
+
+7. Students Complete the New Course:
+   - 0xStudent1 calls completeCourse(2)
+   - 0xStudent3 calls completeCourse(2)
+
+8. Airdrop NFTs for the New Course:
+   - After the deadline passes, 0xAdmin1 calls airdropNFTs(2)
+   - 0xStudent1 and 0xStudent3 receive NFTs for Course ID 2
+
+9. Check Course Completion:
+   - Anyone can call getCompletedUsers(1) to see who completed Course ID 1
+   - Anyone can call getCompletedUsers(2) to see who completed Course ID 2
+
+10. Check NFT Ownership:
+    - Anyone can check NFT balances using balanceOf(address, courseId)
