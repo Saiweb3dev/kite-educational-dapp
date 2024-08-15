@@ -36,8 +36,13 @@ export interface CheckAnswersResponse {
 }
 
 export interface CheckAnswerButtonProps {
-  courseName: string;
+  courseName: string | undefined;
   answers: Answer[];
   onResultReceived: (result: CheckAnswersResponse) => void;
   address: string | undefined;
+}
+
+export interface QuizMainComponentProps {
+  courseDetailsProp: CourseDetails;
+  address: string; // Adjust the type according to your actual use case
 }
