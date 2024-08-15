@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Quiz } from "../../../types/UserCourse";
 
-const QuizComponent: React.FC<{ quiz: Quiz; onAnswerSelected: (index: number, option: string) => void }> = ({ quiz, onAnswerSelected }) => {
+const QuizButton: React.FC<{ quiz: Quiz; onAnswerSelected: (index: number, option: string) => void }> = ({ quiz, onAnswerSelected }) => {
   // State to track the currently selected option
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
 
@@ -27,4 +27,4 @@ const QuizComponent: React.FC<{ quiz: Quiz; onAnswerSelected: (index: number, op
   );
 };
 
-export default QuizComponent;
+export default QuizButton;
