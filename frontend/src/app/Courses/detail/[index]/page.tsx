@@ -1,7 +1,7 @@
 // Import necessary modules and components
 "use client";
 import CheckAnswerButton from "@/components/UserCourse/CheckAnswerButton";
-import QuizComponent from "@/components/UserCourse/QuizComponent"; // Custom component for quizzes
+import QuizButton from "@/components/UserCourse/QuizButton"; // Custom component for quizzes
 import QuizResultModal from "@/components/UserCourse/QuizResultModal";
 import axios from "axios"; // HTTP client for making requests
 import { useParams } from "next/navigation"; // Hook to access route parameters
@@ -102,42 +102,49 @@ const CourseDetailPage: React.FC = () => {
         className="mb-4 rounded-lg shadow-lg"
       />
       <p className="text-lg">{courseDetails.description}</p>
-      {/* Conditionally render the QuizComponent if there are quizzes */}
+      {/* Conditionally render the QuizButton if there are quizzes */}
       <div className="flex flex-col justify-center items-center space-y-4">
         {courseDetails.quizzes.length > 0 && (
-          <QuizComponent
+          <QuizButton
             quiz={courseDetails.quizzes[quizProgress.currentIndex]} // Pass the current quiz to the component
             onAnswerSelected={onAnswerSelected} // Pass the function to handle answer selection
           />
         )}
         {/* Buttons for navigating through the quizzes */}
-        <div className="flex flex-row justify-center items-center space-x-6">
-          <CheckAnswerButton
-            courseName={courseDetails.name}
-            answers={answers}
-            onResultReceived={handleResultReceived}
-            address={address}
-          />
-          <button
-            onClick={() =>
-              setQuizProgress({
-                ...quizProgress,
-                currentIndex:
-                  (quizProgress.currentIndex + 1) %
-                  courseDetails.quizzes.length,
-              })
-            }
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Next
-          </button>
-          {quizProgress.isCompleted && isModalOpen && quizResult && (
-            <QuizResultModal
-              quizResult={quizResult}
-              onClose={() => setIsModalOpen(false)}
-            />
-          )}
-        </div>
+        {/* Buttons for navigating through the quizzes */}
+<div className="flex flex-row justify-center items-center space-x-6">
+  <CheckAnswerButton
+    courseName={courseDetails.name}
+    answers={answers}
+    onResultReceived={handleResultReceived}
+    address={address}
+  />
+  {quizProgress.isCompleted && isModalOpen && quizResult && (
+    <QuizResultModal
+      quizResult={quizResult}
+      onClose={() => setIsModalOpen(false)}
+    />
+  )}
+  {courseDetails.quizzes.length > 0 && (
+    <>
+      {quizProgress.currentIndex < courseDetails.quizzes.length - 1 ? (
+        <button
+          onClick={() =>
+            setQuizProgress({
+              ...quizProgress,
+              currentIndex:
+                (quizProgress.currentIndex + 1) %
+                courseDetails.quizzes.length,
+            })
+          }
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Next
+        </button>
+      ) : null}
+    </>
+  )}
+</div>
       </div>
     </div>
   );
