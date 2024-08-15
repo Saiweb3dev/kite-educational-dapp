@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const authMiddleware = require('./middleware/authMiddleware');
 const courseController = require('./controllers/course/courseController')
+const quizController = require('./controllers/user/userQuizController')
 
 const app = express();
 const port = 8080;
@@ -22,6 +23,8 @@ app.post('/admin/create-course',
 
 app.get('/api/courses',courseController.getCourses)
 app.get('/api/course/:courseName', courseController.getCourseDetails);
+
+app.post('/check_answers/:courseName', quizController.checkAnswers);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
