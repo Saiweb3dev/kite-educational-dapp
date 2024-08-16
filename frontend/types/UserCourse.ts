@@ -22,6 +22,7 @@ export interface CourseDetails {
   description: string;
   imageUrl: string;
   quizzes: Quiz[];
+  link:string
 }
 
 interface Answer {
