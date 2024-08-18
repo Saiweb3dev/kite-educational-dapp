@@ -15,7 +15,7 @@ interface ContractAddresses {
 }
 
 // Custom hook for calling contract functions
-export const useCallContractFunction = () => {
+export const useCallContractFunc = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -78,11 +78,18 @@ export const useCallContractFunction = () => {
   const callContractFunction = async ({
     functionName,
     params,
-    userAddress
+    userAddress,
   }: CallContractFunctionProps) => {
+    const GAS_LIMIT = "1000000";
+    const GAS_PRICE = await web3.eth.getGasPrice();
+    console.log("Current network ID:", await web3.eth.net.getId());
+    console.log("Latest block:", await web3.eth.getBlock("latest"));
+    console.log("Gas price:", GAS_PRICE);
     try {
       setLoading(true); // Set loading state to true
-
+      console.log(`Calling function: ${functionName}`);
+      console.log(`Parameters:`, params);
+      console.log(`User Address:`, userAddress);
 
       // Find the function definition in the ABI
       const functionABI = abi.find(
@@ -111,18 +118,27 @@ export const useCallContractFunction = () => {
           functionABI.stateMutability === "view" ||
           functionABI.stateMutability === "pure";
         const result = isReadOnly
-          ? await constructedMethod.call({ from: userAddress  })
-          : await constructedMethod.send({ from: userAddress  });
+          ? await constructedMethod.call({ from: userAddress })
+          : await constructedMethod.send({
+              from: userAddress,
+              gas: GAS_LIMIT,
+              gasPrice: String(GAS_PRICE),
+            });
+            console.log("Result:", result);
         setResult(result);
       } else {
         // Handle case where no params are provided
-        const result = await method().call({ from: userAddress  });
+        const result = await method().call({ from: userAddress });
         setResult(result);
       }
     } catch (err) {
       console.error("Error calling contract function:", err);
-      // Handle errors by updating the error state
-      setError(err instanceof Error ? err.message : "An error occurred");
+      if (err instanceof Error) {
+        console.error("Error details:", err.message);
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setLoading(false); // Reset loading state after the operation completes
     }
