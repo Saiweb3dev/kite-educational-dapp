@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -14,7 +14,7 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
     using Strings for uint256;
 
     // Counter for generating unique course IDs
-    uint256 private _nextCourseId;
+    uint256 private _nextCourseId = 1;
 
     // Mapping to store admin privileges
     mapping(address => bool) private _isAdmin;
@@ -32,6 +32,9 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
     // Mapping of user address to course ID to token balance
     mapping(address => mapping(uint256 => uint256)) public userBalances;
 
+    // Mapping to track if a user has attempted a course
+    mapping(address => mapping(uint256 => bool)) public hasAttemptedCourse;
+
     // Maximum number of tokens a user can earn per course
     uint256 public constant MAX_TOKENS_PER_USER = 5;
 
@@ -40,6 +43,7 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
     event QuizAttempted(address indexed user, uint256 indexed courseId, uint256 score, uint256 tokensEarned);
     event CourseUpdated(uint256 indexed courseId, string ipfsHash, bool isActive);
     event AdminStatusChanged(address indexed account, bool isAdmin);
+    event CourseTokenAvailable(uint256 CourseTokenAvailable);
 
     /**
      * @dev Constructor to initialize the contract
@@ -48,15 +52,13 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
     constructor(address initialOwner) 
         ERC1155("https://gateway.pinata.cloud/ipfs/") 
         Ownable(initialOwner)
-    {
-        _nextCourseId = 1;
-    }
+    {}
 
     /**
      * @dev Modifier to restrict access to owner or admins
      */
     modifier onlyOwnerOrAdmin() {
-        require(owner() == _msgSender() || _isAdmin[_msgSender()], "Caller is not owner nor admin");
+        require(owner() == _msgSender() || _isAdmin[_msgSender()], "Not authorized");
         _;
     }
 
@@ -76,7 +78,7 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
      * @param initialSupply Initial number of tokens available for the course
      * @return courseId The ID of the newly created course
      */
-    function createCourse(string memory ipfsHash, uint256 initialSupply) external onlyOwnerOrAdmin returns (uint256) {
+    function createCourse(string calldata ipfsHash, uint256 initialSupply) external onlyOwnerOrAdmin returns (uint256) {
         uint256 courseId = _nextCourseId++;
         courses[courseId] = CourseDetails(ipfsHash, initialSupply, true);
         emit CourseCreated(courseId, ipfsHash);
@@ -89,7 +91,7 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
      * @param ipfsHash New IPFS hash for the course metadata
      * @param isActive New active status for the course
      */
-    function updateCourse(uint256 courseId, string memory ipfsHash, bool isActive) external onlyOwnerOrAdmin {
+    function updateCourse(uint256 courseId, string calldata ipfsHash, bool isActive) external onlyOwnerOrAdmin {
         require(courseId < _nextCourseId, "Course does not exist");
         CourseDetails storage course = courses[courseId];
         course.ipfsHash = ipfsHash;
@@ -100,31 +102,35 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
     /**
      * @dev Function for users to attempt a quiz and earn tokens
      * @param courseId ID of the course for which the quiz is attempted
-     * @param score Score achieved by the user in the quiz
+     * @param score Score achieved by the user in the quiz (0-5)
      */
     function attemptQuiz(uint256 courseId, uint256 score) external {
         CourseDetails storage course = courses[courseId];
-        require(course.isActive, "Course is not active");
-        require(course.totalTokens > 0, "Token supply is finished");
-        require(userBalances[_msgSender()][courseId] < MAX_TOKENS_PER_USER, "Max tokens minted for this course");
+        require(course.isActive && course.totalTokens > 0 && !hasAttemptedCourse[_msgSender()][courseId] && score <= 5, "Invalid attempt");
 
-        uint256 earnedTokens = calculateScore(score);
+        uint256 earnedTokens = score;
+        uint256 availableTokens = MAX_TOKENS_PER_USER - userBalances[_msgSender()][courseId];
+        earnedTokens = earnedTokens <= availableTokens ? earnedTokens : availableTokens;
+        earnedTokens = earnedTokens <= course.totalTokens ? earnedTokens : course.totalTokens;
+
         require(earnedTokens > 0, "No tokens earned");
-        earnedTokens = (earnedTokens <= course.totalTokens) ? earnedTokens : course.totalTokens;
 
         _mint(_msgSender(), courseId, earnedTokens, "");
         course.totalTokens -= earnedTokens;
         userBalances[_msgSender()][courseId] += earnedTokens;
+        hasAttemptedCourse[_msgSender()][courseId] = true;
+
         emit QuizAttempted(_msgSender(), courseId, score, earnedTokens);
     }
 
     /**
-     * @dev Internal function to calculate tokens earned based on quiz score
-     * @param score The score achieved in the quiz
-     * @return The number of tokens earned
+     * @dev Function for users to check their token balance for a specific course
+     * @param courseId ID of the course (token ID) to check the balance for
+     * @return The user's token balance for the specified course
      */
-    function calculateScore(uint256 score) internal pure returns (uint256) {
-        return (score * 20) / 50;
+    function checkUserBalance(uint256 courseId) public view returns (uint256) {
+        require(courseId < _nextCourseId, "Course does not exist");
+        return userBalances[msg.sender][courseId];
     }
 
     /**
@@ -143,5 +149,17 @@ contract KITE_EEDU_NFT is ERC1155Supply, Ownable {
      */
     function courseExists(uint256 courseId) public view returns (bool) {
         return courseId < _nextCourseId;
+    }
+
+    /**
+     * @dev Function to check the balance of tokens available for a course
+     * @param courseId ID of the course to check
+     * @return The number of tokens available for the course
+     */
+    function checkCourseTokenBalance(uint256 courseId) external onlyOwnerOrAdmin returns (uint256) {
+        require(courseId < _nextCourseId, "Course does not exist");
+        uint256 balance = courses[courseId].totalTokens;
+        emit CourseTokenAvailable(balance);
+        return balance;
     }
 }
