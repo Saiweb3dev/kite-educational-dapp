@@ -2,8 +2,9 @@ const fs = require('fs').promises; // Note the change here
 const path = require('path');
 
 class CourseModel {
-  constructor(name, imageUrl, link, quizzes) {
+  constructor(name,IpfsHash, imageUrl, link, quizzes) {
       this.name = name;
+      this.hash = IpfsHash;
       this.imageUrl = imageUrl;
       this.link = link;
       this.quizzes = quizzes || [];

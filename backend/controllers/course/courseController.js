@@ -2,6 +2,7 @@ const CourseModel = require('../../models/course/CourseModel');
 const path = require('path');
 const fs = require('fs').promises;
 const {fileAccessFunc} = require("../../utils/fileAccessFunc")
+const {pinJSONtoIPFS} = require("../../models/IPFS/pinataIpfsPinning")
 exports.createCourse = async (req, res) => {
   try {
     console.log("Calling createCourse from course controller")
@@ -11,10 +12,12 @@ exports.createCourse = async (req, res) => {
       if (!courseData.courseName || !courseData.imageUrl || !courseData.link) {
           return res.status(400).send({ message: 'Missing required fields' });
       }
+      const IpfsHash = await pinJSONtoIPFS(courseData);
+      console.log("IpfsHash --> ", IpfsHash)
       console.log("calling course model")
-      const course = new CourseModel(courseData.courseName, courseData.imageUrl, courseData.link, courseData.quizzes);
+      const course = new CourseModel(courseData.courseName,IpfsHash,courseData.imageUrl, courseData.link, courseData.quizzes);
       await course.save();
-      res.status(201).send({ message: 'Course created successfully' });
+      res.status(201).send(IpfsHash);
   } catch (error) {
       console.error('Error creating course:', error);
       res.status(500).send({ message: 'Error creating course', error });

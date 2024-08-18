@@ -1,4 +1,5 @@
 // Importing the jsonwebtoken library for handling JWT tokens
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 // Secret key for signing/verifying JWT tokens, should be replaced with a strong, unique secret in production environments
@@ -20,11 +21,14 @@ const authMiddleware = (req, res, next) => {
     // If no token is provided, returning a 403 status code with an error message
     return res.status(403).send('No token provided');
   }
+  console.log(token)
+  console.log(SECRET_KEY)
 
   // Verifying the JWT token using the secret key
   jwt.verify(token, SECRET_KEY, (err, decoded) => {
     if (err) {
       // If there's an error during verification, returning a 401 status code with an error message
+      console.log(err)
       return res.status(401).send('Invalid token');
     }
 
