@@ -8,7 +8,8 @@ const SECRET_KEY = process.env.SECRET_KEY_FOR_AUTH;
 // Array containing the addresses of authorized admins
 const ADMIN_ADDRESSES = [
   '0xC2F20D5c81F5B4450aA9cE62638d0bB01DF1935a',
-  '0x456...' // Truncated for brevity
+  '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+  "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" // Truncated for brevity
 ];
 
 // Middleware function to authenticate requests using JWT tokens
@@ -34,6 +35,7 @@ const authMiddleware = (req, res, next) => {
 
     // Checking if the decoded address is included in the list of admin addresses
     if (!ADMIN_ADDRESSES.includes(decoded.address)) {
+      console.log(decoded.address)
       // If the address is not recognized as an admin, returning a 403 status code with an error message
       return res.status(403).send('Not authorized');
     }
