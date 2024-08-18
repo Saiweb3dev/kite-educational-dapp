@@ -181,6 +181,18 @@
     {
       "type": "event",
       "anonymous": false,
+      "name": "CourseTokenAvailable",
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "CourseTokenAvailable",
+          "indexed": false
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "CourseUpdated",
       "inputs": [
         {
@@ -402,6 +414,43 @@
     },
     {
       "type": "function",
+      "name": "checkCourseTokenBalance",
+      "constant": false,
+      "payable": false,
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "courseId"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "checkUserBalance",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "courseId"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "courseExists",
       "constant": true,
       "stateMutability": "view",
@@ -478,6 +527,29 @@
         {
           "type": "uint256",
           "name": "id"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "bool",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "hasAttemptedCourse",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
+        {
+          "type": "address",
+          "name": ""
+        },
+        {
+          "type": "uint256",
+          "name": ""
         }
       ],
       "outputs": [
