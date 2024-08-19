@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 
 // Admin route
 app.post("/admin/create-course", authMiddleware, courseController.createCourse);
+app.post("/admin/update-course",authMiddleware,courseController.updateCourse)
 
 // Endpoint to generate JWT
 app.post("/auth", authController.adminVerification);
