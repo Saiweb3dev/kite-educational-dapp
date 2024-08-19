@@ -24,7 +24,9 @@ const CourseDetailPage: React.FC = () => {
       try {
         setLoading(true); // Sets loading to true before fetching data
         const response = await axios.get(`http://localhost:8080/api/course/${name}`); // Fetches course details from API
-        const courseDetailsFromApi = response.data; // Extracts course details from the response
+        const courseDetailsFromApi = response.data;
+        console.log("courseDetailsFromApi --> ",response.data)
+         // Extracts course details from the response
         setCourseDetails(courseDetailsFromApi); // Updates state with fetched details
         localStorage.setItem("courseDetails", JSON.stringify(courseDetailsFromApi)); // Stores course details in local storage
       } catch (err) {

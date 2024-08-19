@@ -9,12 +9,15 @@ export interface Quiz {
   answerIndex?: number; // Optional field to store the selected answer index
 }
 
+// In UserCourse.types.ts
+
 export interface QuizResultProps {
   quizResult: {
     correct_answers: number;
     total_questions: number;
   };
-  onClose: () => void; // Function to close the modal
+  onClose: () => void;
+  courseID: number; // Add this line
 }
 
 export interface CourseDetails {
@@ -22,7 +25,8 @@ export interface CourseDetails {
   description: string;
   imageUrl: string;
   quizzes: Quiz[];
-  link:string
+  link:string;
+  id:number;
 }
 
 interface Answer {

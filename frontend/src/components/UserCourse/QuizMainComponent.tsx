@@ -69,6 +69,7 @@ const QuizMainComponent: React.FC<QuizMainComponentProps> = ({ courseDetailsProp
           <QuizResultModal
             quizResult={quizResult}
             onClose={() => setIsModalOpen(false)}
+            courseID={courseDetails.id}
           />
         )}
         {courseDetails?.quizzes?.length > 0 && (

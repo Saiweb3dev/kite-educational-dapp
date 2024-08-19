@@ -49,7 +49,8 @@ const QuizPage: React.FC = () => {
         {quizProgress.isCompleted && isModalOpen && quizResult && (
           <QuizResultModal
             quizResult={quizResult} // Passes quiz result to the modal
-            onClose={() => setIsModalOpen(false)} // Function to close the modal
+            onClose={() => setIsModalOpen(false)}
+            courseID={courseDetails.id} // Function to close the modal
           />
         )}
       </div>

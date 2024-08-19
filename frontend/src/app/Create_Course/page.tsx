@@ -39,6 +39,9 @@ const CreateCoursePage: React.FC = () => {
   // State to hold the authentication token
   const [token, setToken] = useState<string | null>(null);
 
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<any>(null);
+
   //custom hoook to call the contract
   const { callContractFunction, loading, result, error } =
     useCallContractFunc();
@@ -80,6 +83,22 @@ const CreateCoursePage: React.FC = () => {
       console.error("Authentication failed", error);
     }
   };
+  function extractCourseId(txResponse: any) {
+    // Check if the txResponse and events object exist to avoid runtime errors
+    if (!txResponse || !txResponse.events || !txResponse.events.CourseCreated) {
+      console.error("Transaction response or CourseCreated event not found.");
+      return null; // Return null or an appropriate value indicating failure
+    }
+
+    // Navigate through the object structure to find courseId
+    const courseIdBigInt =
+      txResponse.events.CourseCreated.returnValues.courseId;
+
+    // Convert BigInt to Number
+    const courseIdNumber = ethers.toNumber(courseIdBigInt);
+
+    return courseIdNumber;
+  }
 
   // Function to submit the course creation form
   const handleSubmit = async (courseData: CourseData) => {
@@ -104,14 +123,32 @@ const CreateCoursePage: React.FC = () => {
       try {
         console.log("Calling contract function...");
         console.log("IPFS Hash --> ", ipfsHash);
-        console.log("address -->",address);
-        console.log("createCourse")
-        await callContractFunction({
+        console.log("address -->", address);
+        console.log("createCourse");
+        const txResponse = await callContractFunction({
           functionName: "createCourse",
           params: [ipfsHash, 100],
           userAddress: address ?? "",
         });
-        console.log("Course created successfully...", result);
+        const courseId = extractCourseId(txResponse);
+        console.log("Extracted Course ID:", courseId);
+
+        //TODO: Here need to get the tokenId from contract output and send the data to backend local course data to be stored and that is accessed for minting by user in attemptQuiz in QuizResultModal.tsx
+
+        const combinedData = {
+          ...courseData,
+          IpfsHash: ipfsHash,
+          courseId: courseId,
+        };
+
+        const updateCourseResponse  = await axios.post(
+          "http://localhost:8080/admin/update-course",
+          { combinedData },
+          {
+            headers: { Authorization: token },
+          })
+          console.log("Course created and updated successfully...", updateCourseResponse);
+
       } catch (err) {
         console.log(err);
         console.log("Error in calling contract function...");

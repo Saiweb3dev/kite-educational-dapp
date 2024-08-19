@@ -19,6 +19,7 @@ export const useCallContractFunc = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  
 
   // Cast the imported contract address to match the expected type
   const contractAddressTyped = contractAddress as ContractAddresses;
@@ -126,10 +127,10 @@ export const useCallContractFunc = () => {
             });
             console.log("Result:", result);
         setResult(result);
+        return result;
       } else {
-        // Handle case where no params are provided
-        const result = await method().call({ from: userAddress });
-        setResult(result);
+        console.log("Error in calling function")
+        
       }
     } catch (err) {
       console.error("Error calling contract function:", err);
