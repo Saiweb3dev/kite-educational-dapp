@@ -4,6 +4,7 @@ export interface Option {
 }
 
 export interface Quiz {
+  id: number;
   question: string;
   options: Option[];
   answerIndex?: number; // Optional field to store the selected answer index

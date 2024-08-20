@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Quiz } from "../../../types/UserCourse";
 
-const QuizButton: React.FC<{ quiz: Quiz; onAnswerSelected: (index: number, option: string) => void }> = ({ quiz, onAnswerSelected }) => {
+const QuizButton: React.FC<{ quiz: Quiz; onAnswerSelected: (questionId: number, option: string) => void }> = ({ quiz, onAnswerSelected }) => {
   // State to track the currently selected option
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
 
   // Function to handle option selection
   const handleOptionClick = (index: number, optionText: string) => {
     setSelectedOptionIndex(index); // Update the state with the selected option index
-    onAnswerSelected(index, optionText); // Notify the parent component about the selection
+    onAnswerSelected(quiz.id, optionText); // Pass the quiz.id (questionId) instead of the index
   };
 
   return (

@@ -29,13 +29,14 @@ const QuizMainComponent: React.FC<QuizMainComponentProps> = ({ courseDetailsProp
   }, [quizProgress.isCompleted]);
 
   // Function to handle answer selection in the quiz
-  const onAnswerSelected = (index: number, option: string):void => {
-    console.log(`Selected answer index: ${index} ${option}`);
+  const onAnswerSelected = (questionId: number, option: string): void => {
+    console.log(`Selected answer for question ${questionId}: ${option}`);
     setAnswers((prevAnswers) => [
-      ...prevAnswers.filter((a) => a.questionId !== index),
-      { questionId: index, selectedOption: option },
+      ...prevAnswers.filter((a) => a.questionId !== questionId),
+      { questionId, selectedOption: option },
     ]);
   };
+
 
   const handleResultReceived = (result: CheckAnswersResponse) => {
     console.log("Quiz result:", result);
