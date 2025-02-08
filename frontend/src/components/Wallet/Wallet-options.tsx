@@ -6,8 +6,11 @@ import { Connector, useConnect } from 'wagmi'; // wagmi hooks and types for wall
  * Users can select a wallet to connect to the dApp.
  */
 export function WalletOptions() {
-  const { connectors, connect } = useConnect(); // wagmi hook to get available connectors and connect function
+  const { connectors, connect} = useConnect(); // wagmi hook to get available connectors and connect function
   const [showModal, setShowModal] = React.useState(false); // State to control the visibility of the wallet options modal
+
+  // Filter connectors to only include MetaMask
+  const metaMaskConnector : Connector | undefined = connectors.find(connector => connector.name === 'MetaMask');
 
   /**
    * Function to show the modal when the "Connect" button is clicked.
@@ -41,23 +44,29 @@ export function WalletOptions() {
       {/* Modal displaying available wallet connection options */}
       {showModal && (
         <div className="fixed inset-0 p-16 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white text-black text-center px-6 py-28 rounded-md text-sm font-medium hover:bg-gray-200">
-            <h2 className="text-4xl font-semibold">Connect Wallet</h2>
-            <div className='flex flex-row space-x-6 m-6'>
-              {/* Map over available connectors to render buttons for each wallet option */}
-              {connectors.map((connector) => (
-                <button 
-                  key={connector.uid} 
-                  onClick={() => handleWalletSelect(connector)}
-                  className="bg-black text-white px-6 py-2 rounded hover:bg-gray-200 hover:text-black transition duration-300 w-fit "
-                >
-                  {connector.name}
-                </button>
-              ))}
-            </div>
+        <div className="bg-white text-black text-center px-6 py-28 rounded-md text-sm font-medium hover:bg-gray-200">
+          <h2 className="text-4xl font-semibold">Connect Wallet</h2>
+          <div className='flex flex-row justify-center space-x-6 m-6'>
+            {/* Render button for MetaMask wallet option */}
+            {metaMaskConnector && (
+              <button 
+                key={metaMaskConnector.id} 
+                onClick={() => handleWalletSelect(metaMaskConnector)}
+                className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-500 hover:text-gray-300 transition duration-300 w-fit "
+              >
+                {metaMaskConnector.name}
+              </button>
+            )}
           </div>
+          <button 
+              onClick={() => setShowModal(false)}
+              className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+            >
+              Close
+            </button>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </div>
   );
 }
