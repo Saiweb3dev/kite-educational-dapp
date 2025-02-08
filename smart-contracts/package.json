@@ -15,5 +15,8 @@
     "ethers": "^6.13.2",
     "hardhat": "^2.22.8",
     "hardhat-deploy": "^0.12.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
   }
 }
