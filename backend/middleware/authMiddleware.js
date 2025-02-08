@@ -3,7 +3,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 // Secret key for signing/verifying JWT tokens, should be replaced with a strong, unique secret in production environments
-const SECRET_KEY = process.env.SECRET_KEY_FOR_AUTH;
+const SECRET_KEY = process.env.SECRET_KEY_FOR_AUTH || "secret";
 
 // Array containing the addresses of authorized admins
 const ADMIN_ADDRESSES = [
